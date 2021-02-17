@@ -327,9 +327,10 @@ export class Configuration {
      * @param enableWarningLogging if true, enables warning logging
      * @returns {Configuration} this class
      */
-    public static setInternalLogging(enableDebugLogging = false, enableWarningLogging = true) {
+    public static setInternalLogging(enableDebugLogging = false, enableWarningLogging = true, enableErrorLogging = true) {
         Logging.enableDebug = enableDebugLogging;
         Logging.disableWarnings = !enableWarningLogging;
+        Logging.disableErrors =!enableErrorLogging;
         return Configuration;
     }
 

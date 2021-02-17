@@ -204,7 +204,7 @@ class AutoCollectHttpRequests {
      */
     public static trackRequest(client: TelemetryClient, telemetry: Contracts.NodeHttpRequestTelemetry, _requestParser?: HttpRequestParser) {
         if (!telemetry.request || !telemetry.response || !client) {
-            Logging.info("AutoCollectHttpRequests.trackRequest was called with invalid parameters: ", !telemetry.request, !telemetry.response, !client);
+            Logging.warn("AutoCollectHttpRequests.trackRequest was called with invalid parameters: ", !telemetry.request, !telemetry.response, !client);
             return;
         }
 

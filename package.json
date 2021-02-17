@@ -60,6 +60,7 @@
     "typescript": "2.4.2"
   },
   "dependencies": {
+    "@azure/logger": "^1.0.1",
     "cls-hooked": "^4.2.2",
     "continuation-local-storage": "^3.2.1",
     "diagnostic-channel": "0.3.1",

@@ -3,6 +3,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
+import Logging = require("../../Library/Logging")
 
 export const homedir = os.homedir ? os.homedir() : (process.env[(process.platform == "win32") ? "USERPROFILE" : "HOME"]);
 
@@ -46,7 +47,7 @@ export function makeStatusDirs(filepath: string): boolean {
         mkDirByPathSync(homedir, filepath.replace(/\\/g, path.sep).replace(/\//g, path.sep));
         return true;
     } catch (e) {
-        console.error("Error creating Application Insights status folder", e);
+        Logging.error("Error creating Application Insights status folder", e);
         return false;
     }
 }

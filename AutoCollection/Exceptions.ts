@@ -51,7 +51,7 @@ class AutoCollectExceptions {
                     this._client.flush({ isAppCrashing: true });
                     // only rethrow when we are the only listener
                     if (reThrow && name && process.listeners(name).length === 1) {
-                        console.error(error);
+                        Logging.error(error);
                         process.exit(1);
                     }
                 };

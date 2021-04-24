@@ -24,6 +24,7 @@ if (IsInitialized) {
         redis: publishers.redis,
         pg: publishers.pg,
         pgPool: publishers.pgPool,
+        tedious: publishers.tedious,
         winston: publishers.winston,
         azuresdk: publishers.azuresdk
     };

@@ -226,6 +226,15 @@ module.exports = {
             telemetry.data.baseData.type == "mysql";
         }
     ),
+    "MSSQLQuery": outputContract(
+        "RemoteDependencyData",
+        (telemetry) => {
+            return telemetry.data.baseData.name === "SELECT * FROM 'test_table'" &&
+            telemetry.data.baseData.data === "SELECT * FROM 'test_table'" &&
+            telemetry.data.baseData.target.indexOf(":14330") > -1 &&
+            telemetry.data.baseData.type == "mssql";
+        }
+    ),
     "RedisGet": outputContract(
         "RemoteDependencyData",
         (telemetry) => {

@@ -46,6 +46,7 @@ class AutoCollectHttpDependencies {
             require("./diagnostic-channel/mysql.sub").enable(isEnabled, this._client);
             require("./diagnostic-channel/redis.sub").enable(isEnabled, this._client);
             require("./diagnostic-channel/postgres.sub").enable(isEnabled, this._client);
+            require("./diagnostic-channel/tedious.sub").enable(isEnabled, this._client);
         }
     }
 

@@ -6,6 +6,7 @@ var Winston = require("./Winston");
 var Redis = require("./Redis");
 var Utils = require("./Utils");
 var Postgres = require("./Postgres");
+// var Tedious = require("./Tedious");
 var AzureSdkStorage = require("./AzureSDKStorage");
 var AzureSdkEventHubs = require("./AzureSdkEventHubs");
 
@@ -31,6 +32,7 @@ module.exports = {
     ConsoleLog: Utils.consoleLog,
     ConsoleAssert: Utils.consoleAssert,
     MySQLQuery: MySQL.query,
+    // MSSQLQuery: Tedious.query,
     RedisGet: Redis.get,
     RedisSet: Redis.set,
     RedisSet2: Redis.set2,

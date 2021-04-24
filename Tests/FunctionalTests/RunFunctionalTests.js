@@ -67,6 +67,7 @@ function startDocker() {
         run("docker run -d -p 27017:27017 --name ainjsmongo mongo"),
         run("docker run -e MYSQL_ROOT_PASSWORD=dummypw -e MYSQL_DATABASE=testdb -d -p 33060:3306 --name ainjsmysql mysql:5"),
         run("docker run -d -p 63790:6379 --name ainjsredis redis:alpine"),
+        // run("docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=yourStrong(!)Password' -p 14330:1433 -d mcr.microsoft.com/mssql/server:2017-CU8-ubuntu --name ainjsmssql"),
         run("docker run -e POSTGRES_PASSWORD=dummypw -d -p 54320:5432 --name ainjspostgres postgres:alpine")
     ];
 
@@ -85,11 +86,13 @@ function cleanUpDocker() {
     run("docker stop ainjsmysql");
     run("docker stop ainjsredis");
     run("docker stop ainjspostgres");
+    // run("docker stop ainjsmssql");
 
     run("docker rm ainjsmongo");
     run("docker rm ainjsmysql");
     run("docker rm ainjsredis");
     run("docker rm ainjspostgres");
+    // run("docker rm ainjsmssql");
 }
 
 function main() {

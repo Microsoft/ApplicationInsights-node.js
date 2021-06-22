@@ -20,7 +20,7 @@ export class DiagnosticLogger {
             siteName: process.env.WEBSITE_SITE_NAME,
             ikey: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
             extensionVersion: process.env.ApplicationInsightsAgent_EXTENSION_VERSION,
-            sdkVersion: "2.1.0-beta.1",
+            sdkVersion: "2.1.2-beta.0",
             subscriptionId: process.env.WEBSITE_OWNER_NAME ? process.env.WEBSITE_OWNER_NAME.split("+")[0] : null,
         }
     }

@@ -47,10 +47,7 @@ describe("AutoCollection/PreAggregatedMetrics", () => {
                 autoCollect2["_trackRequestMetrics"]();
                 AutoCollectPreAggregatedMetrics.countRequest(5000, {});
 
-                const prev1 = autoCollect1["_lastIntervalRequestExecutionTime"];
-                const prev2 = autoCollect2["_lastIntervalRequestExecutionTime"];
-                assert.deepEqual(prev1, prev2);
-                assert.deepEqual(prev1, 1000 + 2000);
+                assert.deepEqual(AutoCollectPreAggregatedMetrics["_requestCountersCollection"][0]["lastIntervalExecutionTime"], 1000 + 2000);
 
                 // Add to end of event loop
                 setTimeout(() => {

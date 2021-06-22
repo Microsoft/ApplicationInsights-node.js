@@ -23,8 +23,6 @@ class AutoCollectPreAggregatedMetrics {
     private _handle: NodeJS.Timer;
     private _isEnabled: boolean;
     private _isInitialized: boolean;
-    private _lastIntervalRequestExecutionTime: number = 0; // the sum of durations which took place during from app start until last interval
-    private _lastIntervalDependencyExecutionTime: number = 0;
 
     private static _dependencyCountersCollection: Array<AggregatedMetricCounter>;
     private static _requestCountersCollection: Array<AggregatedMetricCounter>;
@@ -172,8 +170,8 @@ class AutoCollectPreAggregatedMetrics {
             currentCounter.time = +new Date;
             var intervalRequests = (currentCounter.totalCount - currentCounter.lastTotalCount) || 0;
             var elapsedMs = currentCounter.time - currentCounter.lastTime;
-            var averageRequestExecutionTime = ((currentCounter.intervalExecutionTime - this._lastIntervalRequestExecutionTime) / intervalRequests) || 0;
-            this._lastIntervalRequestExecutionTime = currentCounter.intervalExecutionTime; // reset
+            var averageRequestExecutionTime = ((currentCounter.intervalExecutionTime - currentCounter.lastIntervalExecutionTime) / intervalRequests) || 0;
+            currentCounter.lastIntervalExecutionTime = currentCounter.intervalExecutionTime; // reset
             if (elapsedMs > 0) {
                 if (intervalRequests > 0) {
                     this._trackPreAggregatedMetric({
@@ -198,8 +196,8 @@ class AutoCollectPreAggregatedMetrics {
             currentCounter.time = +new Date;
             var intervalDependencies = (currentCounter.totalCount - currentCounter.lastTotalCount) || 0;
             var elapsedMs = currentCounter.time - currentCounter.lastTime;
-            var averageDependencyExecutionTime = ((currentCounter.intervalExecutionTime - this._lastIntervalDependencyExecutionTime) / intervalDependencies) || 0;
-            this._lastIntervalDependencyExecutionTime = currentCounter.intervalExecutionTime; // reset
+            var averageDependencyExecutionTime = ((currentCounter.intervalExecutionTime - currentCounter.lastIntervalExecutionTime) / intervalDependencies) || 0;
+            currentCounter.lastIntervalExecutionTime = currentCounter.intervalExecutionTime; // reset
             if (elapsedMs > 0) {
                 if (intervalDependencies > 0) {
                     this._trackPreAggregatedMetric({

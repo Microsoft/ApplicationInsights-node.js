@@ -12,6 +12,8 @@ export class AggregatedMetricCounter {
 
     public intervalExecutionTime: number;
 
+    public lastIntervalExecutionTime: number;
+
     public dimensions: MetricBaseDimensions;
 
     constructor(dimensions: MetricBaseDimensions) {
@@ -20,6 +22,7 @@ export class AggregatedMetricCounter {
         this.lastTotalCount = 0;
         this.intervalExecutionTime = 0;
         this.lastTime = +new Date;
+        this.lastIntervalExecutionTime = 0;
     }
 }
 

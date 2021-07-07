@@ -55,10 +55,10 @@ export class OpenTelemetryScopeManagerWrapper {
     }
 
     private static _spanToContext(span: Span, parentSpanId?: string, name?: string): CorrelationContext {
-        const _parentId = parentSpanId ? `|${span.context().traceId}.${parentSpanId}.` : span.context().traceId;
+        const _parentId = parentSpanId ? `|${span.spanContext().traceId}.${parentSpanId}.` : span.spanContext().traceId;
         const context: SpanContext = {
-            ...span.context(),
-            traceFlags: span.context().traceFlags
+            ...span.spanContext(),
+            traceFlags: span.spanContext().traceFlags
         };
         const correlationContext = CorrelationContextManager.spanToContextObject(context, _parentId, name)
         return correlationContext;

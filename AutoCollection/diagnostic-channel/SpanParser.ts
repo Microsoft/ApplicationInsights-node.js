@@ -14,7 +14,7 @@ function filterSpanAttributes(attributes: SpanAttributes) {
 }
 
 export function spanToTelemetryContract(span: Span): (Contracts.DependencyTelemetry & Contracts.RequestTelemetry) & Contracts.Identified {
-    const id = `|${span.context().traceId}.${span.context().spanId}.`;
+    const id = `|${span.spanContext().traceId}.${span.spanContext().spanId}.`;
     const duration = Math.round(span["_duration"][0] * 1e3 + span["_duration"][1] / 1e6);
     let peerAddress = span.attributes["peer.address"] ? span.attributes["peer.address"].toString() : "";
     let component = span.attributes["component"] ? span.attributes["component"].toString() : "";

@@ -15,7 +15,7 @@ let clients: TelemetryClient[] = [];
 export const subscriber = (event: IStandardEvent<Span>) => {
     const span = event.data;
     const telemetry = SpanParser.spanToTelemetryContract(span);
-    const spanContext = span.context();
+    const spanContext = span.spanContext();
     const traceparent = new Traceparent();
     traceparent.traceId = spanContext.traceId;
     traceparent.spanId = spanContext.spanId;

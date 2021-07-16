@@ -104,7 +104,7 @@ class Config {
         this._quickPulseHost = csCode.liveendpoint || csEnv.liveendpoint || process.env[Config.ENV_quickPulseHost] || Constants.DEFAULT_LIVEMETRICS_HOST;
         // Parse quickPulseHost if it starts with http(s)://
         if (this._quickPulseHost.match(/^https?:\/\//)) {
-            this._quickPulseHost = url.parse(this._quickPulseHost).host;
+            this._quickPulseHost = new url.URL(this._quickPulseHost).host;
         }
     }
 

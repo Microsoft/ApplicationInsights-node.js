@@ -295,7 +295,7 @@ describe("Library/Util", () => {
     describe("#makeRequest()", () => {
         const proxyUrl = "http://10.0.0.1:3128";
         const proxyUrlHttps = "https://10.0.0.1:3128";
-        const proxyUrlParsed = url.parse(proxyUrl);
+        const proxyUrlParsed = new url.URL(proxyUrl);
         const options = {
             method: "GET",
             headers: <{ [key: string]: string }>{
@@ -305,7 +305,7 @@ describe("Library/Util", () => {
 
         describe("for http request", () => {
             const requestUrl = "http://abc.def.bing.com";
-            const requestUrlParsed = url.parse(requestUrl);
+            const requestUrlParsed = new url.URL(requestUrl);
 
             beforeEach(() => {
                 if (process.env.hasOwnProperty('https_proxy')) {
@@ -384,7 +384,7 @@ describe("Library/Util", () => {
 
         describe("for https request", () => {
             const requestUrl = "https://abc.def.bing.com";
-            const requestUrlParsed = url.parse(requestUrl);
+            const requestUrlParsed = new url.URL(requestUrl);
 
             beforeEach(() => {
                 if (process.env.hasOwnProperty('https_proxy')) {

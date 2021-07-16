@@ -118,7 +118,14 @@ class TelemetryClient {
             // url.parse().host returns null for non-urls,
             // making this essentially a no-op in those cases
             // If this logic is moved, update jsdoc in DependencyTelemetry.target
-            telemetry.target = url.parse(telemetry.data).host;
+            // url.parse() is deprecated, update to use WHATWG URL API instead
+            try {
+                telemetry.target = new url.URL(telemetry.data).host;
+            } catch (error) {
+                // set target as null to be compliant with previous behavior
+                telemetry.target = null;
+                Logging.warn("The URL object is failed to create.", error);
+            }
         }
         this.track(telemetry, Contracts.TelemetryType.Dependency);
     }

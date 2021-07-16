@@ -245,7 +245,7 @@ class Util {
 
         for (let i = 0; i < excludedDomains.length; i++) {
             let regex = new RegExp(excludedDomains[i].replace(/\./g, "\.").replace(/\*/g, ".*"));
-            if (regex.test(url.parse(requestUrl).hostname)) {
+            if (regex.test(new url.URL(requestUrl).hostname)) {
                 return false;
             }
         }
@@ -287,7 +287,7 @@ class Util {
             requestUrl = 'https:' + requestUrl;
         }
 
-        var requestUrlParsed = url.parse(requestUrl);
+        var requestUrlParsed = new url.URL(requestUrl);
         var options = {
             ...requestOptions,
             host: requestUrlParsed.hostname,
@@ -308,7 +308,7 @@ class Util {
             if (proxyUrl.indexOf('//') === 0) {
                 proxyUrl = 'http:' + proxyUrl;
             }
-            var proxyUrlParsed = url.parse(proxyUrl);
+            var proxyUrlParsed = new url.URL(proxyUrl);
 
             // https is not supported at the moment
             if (proxyUrlParsed.protocol === 'https:') {

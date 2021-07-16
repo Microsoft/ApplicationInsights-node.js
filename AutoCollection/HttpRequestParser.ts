@@ -3,8 +3,6 @@ import url = require("url");
 import net = require("net");
 
 import Contracts = require("../Declarations/Contracts");
-import TelemetryClient = require("../Library/TelemetryClient");
-import Logging = require("../Library/Logging");
 import Util = require("../Library/Util");
 import RequestResponseHeaders = require("../Library/RequestResponseHeaders");
 import RequestParser = require("./RequestParser");
@@ -70,7 +68,7 @@ class HttpRequestParser extends RequestParser {
     public getRequestTelemetry(baseTelemetry?: Contracts.Telemetry): Contracts.RequestTelemetry {
         var requestTelemetry: Contracts.RequestTelemetry & Contracts.Identified = {
             id: this.requestId,
-            name: this.method + " " + url.parse(this.url).pathname,
+            name: this.method + " " + new url.URL(this.url).pathname,
             url: this.url,
             /*
             See https://github.com/microsoft/ApplicationInsights-dotnet-server/blob/25d695e6a906fbe977f67be3966d25dbf1c50a79/Src/Web/Web.Shared.Net/RequestTrackingTelemetryModule.cs#L250
@@ -138,7 +136,7 @@ class HttpRequestParser extends RequestParser {
     }
 
     public getOperationName(tags: { [key: string]: string }) {
-        return tags[HttpRequestParser.keys.operationName] || this.method + " " + url.parse(this.url).pathname;
+        return tags[HttpRequestParser.keys.operationName] || this.method + " " + new url.URL(this.url).pathname;
     }
 
     public getRequestId() {
@@ -167,12 +165,14 @@ class HttpRequestParser extends RequestParser {
         }
 
         var encrypted = (<any>request).connection ? ((<any>request).connection as any).encrypted : null;
-        var requestUrl = url.parse(request.url);
+
+        var protocol = (encrypted || request.headers["x-forwarded-proto"] == "https") ? "https" : "http";
+
+        var baseUrl = protocol + '://' + request.headers.host + '/';
+        var requestUrl = new url.URL(request.url, baseUrl);
 
         var pathName = requestUrl.pathname;
         var search = requestUrl.search;
-
-        var protocol = (encrypted || request.headers["x-forwarded-proto"] == "https") ? "https" : "http";
 
         var absoluteUrl = url.format({
             protocol: protocol,

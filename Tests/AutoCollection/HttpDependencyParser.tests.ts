@@ -56,8 +56,8 @@ describe("AutoCollection/HttpDependencyParser", () => {
             assert.equal(dependencyTelemetry.dependencyTypeName, Contracts.RemoteDependencyDataConstants.TYPE_HTTP);
             assert.equal(dependencyTelemetry.success, true);
             assert.equal(dependencyTelemetry.name, "GET /search");
-            assert.equal(dependencyTelemetry.data, "https://a.bing.com:443/search");
-            assert.equal(dependencyTelemetry.target, "a.bing.com:443");
+            assert.equal(dependencyTelemetry.data, "https://a.bing.com/search");
+            assert.equal(dependencyTelemetry.target, "a.bing.com");
         });
 
         it("should return correct data for a URL without a protocol (http)", () => {

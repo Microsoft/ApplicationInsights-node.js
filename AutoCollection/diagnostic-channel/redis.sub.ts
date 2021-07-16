@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for details.
 import TelemetryClient = require("../../Library/TelemetryClient");
+import { StatsbeatInstrumentation } from "../../Declarations/Constants";
 import { channel, IStandardEvent } from "diagnostic-channel";
 
 import { redis } from "diagnostic-channel-publishers";
@@ -30,15 +31,22 @@ export const subscriber = (event: IStandardEvent<redis.IRedisData>) => {
 };
 
 export function enable(enabled: boolean, client: TelemetryClient) {
+    let statsbeat = client.getStatsbeat();
     if (enabled) {
         if (clients.length === 0) {
             channel.subscribe<redis.IRedisData>("redis", subscriber);
+            if (statsbeat) {
+                statsbeat.addInstrumentation(StatsbeatInstrumentation.REDIS);
+            }
         };
         clients.push(client);
     } else {
         clients = clients.filter((c) => c != client);
         if (clients.length === 0) {
             channel.unsubscribe("redis", subscriber);
+            if (statsbeat) {
+                statsbeat.removeInstrumentation(StatsbeatInstrumentation.REDIS);
+            }
         }
     }
 }

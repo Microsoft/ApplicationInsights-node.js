@@ -10,6 +10,8 @@ import Config = require("./Config")
 import Contracts = require("../Declarations/Contracts");
 import AutoCollectHttpDependencies = require("../AutoCollection/HttpDependencies");
 import Util = require("./Util");
+import { Statsbeat } from "../AutoCollection/Statsbeat";
+import { StatsbeatFeature } from "../Declarations/Constants";
 
 class Sender {
     private static TAG = "Sender";
@@ -29,6 +31,7 @@ class Sender {
     public static USE_ICACLS = os.type() === "Windows_NT";
 
     private _config: Config;
+    private _statsbeat: Statsbeat;
     private _onSuccess: (response: string) => void;
     private _onError: (error: Error) => void;
     private _enableDiskRetryMode: boolean;
@@ -41,10 +44,11 @@ class Sender {
     protected _resendInterval: number;
     protected _maxBytesOnDisk: number;
 
-    constructor(config: Config, onSuccess?: (response: string) => void, onError?: (error: Error) => void) {
+    constructor(config: Config, onSuccess?: (response: string) => void, onError?: (error: Error) => void, statsbeat?: Statsbeat) {
         this._config = config;
         this._onSuccess = onSuccess;
         this._onError = onError;
+        this._statsbeat = statsbeat;
         this._enableDiskRetryMode = false;
         this._resendInterval = Sender.WAIT_BETWEEN_RESEND;
         this._maxBytesOnDisk = Sender.MAX_BYTES_ON_DISK;
@@ -92,6 +96,9 @@ class Sender {
             Logging.warn(Sender.TAG, "Ignoring request to enable disk retry mode. Sufficient file protection capabilities were not detected.")
         }
         if (this._enableDiskRetryMode) {
+            if (this._statsbeat) {
+                this._statsbeat.addFeature(StatsbeatFeature.DISK_RETRY);
+            }
             // Starts file cleanup task
             if (!this._fileCleanupTimer) {
                 this._fileCleanupTimer = setTimeout(() => { this._fileCleanupTask(); }, Sender.CLEANUP_TIMEOUT);
@@ -99,6 +106,9 @@ class Sender {
             }
         }
         else {
+            if (this._statsbeat) {
+                this._statsbeat.removeFeature(StatsbeatFeature.DISK_RETRY);
+            }
             if (this._fileCleanupTimer) {
                 clearTimeout(this._fileCleanupTimer);
             }
@@ -149,6 +159,8 @@ class Sender {
                 // Ensure this request is not captured by auto-collection.
                 (<any>options)[AutoCollectHttpDependencies.disableCollectionRequestOption] = true;
 
+                let startTime = +new Date();
+
                 var requestCallback = (res: http.ClientResponse) => {
                     res.setEncoding("utf-8");
 
@@ -159,6 +171,8 @@ class Sender {
                     });
 
                     res.on("end", () => {
+                        let endTime = +new Date();
+                        let duration = endTime - startTime;
                         this._numConsecutiveFailures = 0;
                         if (this._enableDiskRetryMode) {
                             // try to send any cached events if the user is back online
@@ -171,8 +185,13 @@ class Sender {
                                     this._resendTimer.unref();
                                 }
                             } else if (this._isRetriable(res.statusCode)) {
-                                // If response from Breeze
                                 try {
+                                    if (this._statsbeat) {
+                                        this._statsbeat.countRetry();
+                                        if (res.statusCode === 429) {
+                                            this._statsbeat.countThrottle();
+                                        }
+                                    }
                                     const breezeResponse = JSON.parse(responseString) as Contracts.BreezeResponse;
                                     let filteredEnvelopes: Contracts.EnvelopeTelemetry[] = [];
                                     breezeResponse.errors.forEach(error => {
@@ -204,6 +223,9 @@ class Sender {
                                 }
                             }
                             else {
+                                if (this._statsbeat) {
+                                    this._statsbeat.countException();
+                                }
                                 if (typeof callback === "function") {
                                     callback("Error sending telemetry because of circular redirects.");
                                 }
@@ -211,6 +233,9 @@ class Sender {
 
                         }
                         else {
+                            if (this._statsbeat) {
+                                this._statsbeat.countRequest(duration, res.statusCode === 200);
+                            }
                             this._numConsecutiveRedirects = 0;
                             if (typeof callback === "function") {
                                 callback(responseString);
@@ -228,6 +253,9 @@ class Sender {
                 req.on("error", (error: Error) => {
                     // todo: handle error codes better (group to recoverable/non-recoverable and persist)
                     this._numConsecutiveFailures++;
+                    if (this._statsbeat) {
+                        this._statsbeat.countException();
+                    }
 
                     // Only use warn level if retries are disabled or we've had some number of consecutive failures sending data
                     // This is because warn level is printed in the console by default, and we don't want to be noisy for transient and self-recovering errors
